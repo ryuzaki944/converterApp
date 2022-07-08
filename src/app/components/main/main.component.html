@@ -1,0 +1,65 @@
+<section class="container">
+  <div class="title">
+    <h1>Convert Image to Image online</h1>
+  </div>
+  <div class="uploader" appDnd (fileDropped)="onFileDropped($event)">
+    <input
+      type="file"
+      accept="image/jpg, image/svg+xml, image/dicom+jpx"
+      #fileDropRef
+      id="fileDropRef"
+      (change)="fileBrowseHandler($event?.target)"
+      multiple
+      enctype="multipart/form-data"
+    />
+
+    <!-- <img src="assets/img/dnd/ic-upload-file.svg" alt="" /> -->
+    <h3>Supported formats jpg, svg, dicom</h3>
+    <h3>Drag and drop file here</h3>
+    <h3>or</h3>
+    <label for="fileDropRef">Browse for file</label>
+  </div>
+  <div class="error" #error>
+    <p>Error, file does not upload</p>
+  </div>
+  <div class="convert">
+    <input
+      type="button"
+      [disabled]="this.files.length ? false : true"
+      (click)="converter()"
+      value="Convert"
+    />
+  </div>
+  <div class="files-list">
+    <div class="single-file" *ngFor="let file of files; let i = index">
+      <div class="single-file__format">
+        <select name="" id="" (change)="fileFormat($event, i)">
+          <option value="">Choose format</option>
+          <option value="png">PNG</option>
+          <option value="gif">GIF</option>
+        </select>
+      </div>
+      <div class="info">
+        <h4 class="name">
+          {{ file?.name }}
+        </h4>
+        <p class="size">
+          {{ formatBytes(file?.size) }}
+        </p>
+        <app-progress [progress]="file?.progress"></app-progress>
+      </div>
+      <input
+        class="delete"
+        value="delete"
+        type="button"
+        width="20px"
+        alt="file"
+        (click)="deleteFile(i)"
+      />
+    </div>
+  </div>
+
+  <div class="download">
+    <input type="button" (click)="download()" value="Download" />
+  </div>
+</section>
