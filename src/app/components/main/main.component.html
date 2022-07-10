@@ -32,8 +32,9 @@
   </div>
   <div class="files-list">
     <div class="single-file" *ngFor="let file of files; let i = index">
+
       <div class="single-file__format">
-        <select name="" id="" (change)="fileFormat($event, i)">
+        <select name="format" id="" (change)="fileFormat($event, i)">
           <option value="">Choose format</option>
           <option value="png">PNG</option>
           <option value="gif">GIF</option>
@@ -61,5 +62,12 @@
 
   <div class="download">
     <input type="button" (click)="download()" value="Download" />
+  </div>
+
+  <div class="lds-ellipsis" [style.display]="loader">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
   </div>
 </section>

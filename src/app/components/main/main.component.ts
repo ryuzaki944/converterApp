@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ConvertService } from '../../_services/convert.service';
 
+import { ConvertFile } from '../../core/models/models.component';
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -11,33 +13,62 @@ export class MainComponent implements OnInit {
   constructor(private myService: ConvertService) {}
 
   @ViewChild('fileDropRef', { static: false }) fileDropEl: any;
-  files: any[] = [];
+
+  loader: string = 'none';
+  files: any[] = [] as ConvertFile[]
 
   ngOnInit(): void {}
 
-  fileFormat($event: any, index: number) {
-    this.files[index].format = $event.target.value
-    console.log($event.target.value, index, this.files);
+  fileFormat($event: Event, index: number) {
+    const keyName = $event.target as HTMLInputElement
+    this.files[index][keyName.name] = keyName.value;
+    console.log($event.target, index, this.files);
   }
-
+  /**
+   * on file start convert
+   */
   converter() {
-    this.myService.convert(this.files[0]).subscribe(
-      (data: any) => {
-        console.log(data);
-      },
-      (error) => console.log(error)
-    );
+    this.loader = 'inline-block';
+    console.log(this.files);
+    this.files.forEach((item: any) => {
+      this.myService.convert(item).subscribe(
+        (data: any) => {
+          this.loader = 'none';
+          console.log(data);
+        },
+        (error) => {
+          this.loader = 'none';
+          console.log(error);
+        }
+      );
+    });
   }
 
+  /**
+   * on file downloads
+   */
   download() {
-    debugger
     console.log('download', this.files);
-    this.myService.getConvertedFile(this.files[0]).subscribe(
-      (data: any) => {
-        console.log(data);
-      },
-      (error) => console.log(error)
-    );
+    this.loader = 'inline-block';
+
+    this.files.forEach((item: any) => {
+      this.myService.getConvertedFile(item).subscribe(
+        (data: any) => {
+          this.loader = 'none';
+          // const typeFound = this.files[0].name;
+          const blob = new Blob([data]);
+          const link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = `${item.name}.${item.format}`;
+          link.click();
+          window.URL.revokeObjectURL(link.href);
+        },
+        (error) => {
+          this.loader = 'none';
+          console.log(error);
+        }
+      );
+    });
   }
 
   /**
@@ -114,12 +145,28 @@ export class MainComponent implements OnInit {
     if (bytes === 0) {
       return '0 Bytes';
     }
-    const k = 1024;
-    const dm = decimals <= 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    const k: number = 1024;
+    const dm: number = decimals <= 0 ? 0 : decimals;
+    const sizes: any[] = [
+      'Bytes',
+      'KB',
+      'MB',
+      'GB',
+      'TB',
+      'PB',
+      'EB',
+      'ZB',
+      'YB',
+    ];
+    const i: number = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
   }
+
+  // TESTING
+    // Test Format
+    get filesInner(): ConvertFile {
+      return this.files[0]
+    }
 }
 function convert(files: any[]) {
   throw new Error('Function not implemented.');

@@ -13,16 +13,16 @@ import { RouterModule } from "@angular/router";
     AppComponent,
     DndDirective,
     ProgressComponent,
-    MainComponent
+    MainComponent,
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     RouterModule.forRoot([{
       // path = url
       path: '',
       component: MainComponent
     }]),
-    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

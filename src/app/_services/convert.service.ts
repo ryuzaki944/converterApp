@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +16,7 @@ export class ConvertService {
     formData.append('imageData', file);
 
     const params: any = {
-      quality: 75,
-      compressionType: 'baseline',
-      fromScratch: false,
+      format: file.format,
       outPath: file.name,
       storage: 'test',
     };
@@ -27,32 +27,31 @@ export class ConvertService {
     };
 
     return this.http.post(
-      `https://api.aspose.cloud/v3.0/imaging/${file?.name.split('.')[1]}`,
+      `https://api.aspose.cloud/v3.0/imaging/convert`,
       formData,
       options
     );
   }
 
-  getConvertedFile(file: any) {
+  getConvertedFile(file: any): Observable<any> {
     console.log(file, 'get')
     const formData: FormData = new FormData();
     formData.append('imageData', file);
 
     const params: any = {
-      quality: 75,
-      compressionType: 'baseline',
-      fromScratch: false,
+      format: file.format,
       storage: 'test',
     };
 
     const options: any = { 
       headers: { authorization: environment.apiToken },
       params: params,
+      responseType: `blob`
     };
 
     console.log(options, 'options')
     return this.http.get(
-      `https://api.aspose.cloud/v3.0/imaging/bagjanTest/jpg`,
+      `https://api.aspose.cloud/v3.0/imaging/${file.name}/convert`,
       options
     );
   }
